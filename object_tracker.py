@@ -4,16 +4,12 @@ import cv2 as cv
 from matplotlib import pyplot as plt
 
 #%%
-# find SIFT features in images
-# apply the ratio test to find the best matches.
 MIN_MATCH_COUNT = 10
-# a condition that at least 10 matches are to be there to find the object,
-# otherwise simply show a message saying not enough matches are present.
 img1 = cv.imread("photo_3_query.jpg", cv.IMREAD_GRAYSCALE) # queryImage
 vid = cv.VideoCapture('video_3_train.mp4',cv.IMREAD_GRAYSCALE) # trainVideo
-# Initiate SIFT detector
+
 sift = cv.SIFT_create()
-# find the keypoints and descriptors with SIFT
+
 kp1, des1 = sift.detectAndCompute(img1,None)
 
 FLANN_INDEX_KDTREE = 1
@@ -46,20 +42,12 @@ while vid.isOpened():
         if(m.distance < 0.7*n.distance): 
             good.append(m) 
 
-    # maintaining list of index of descriptors 
-    # in query descriptors 
     query_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2) 
-    
-    # maintaining list of index of descriptors 
-    # in train descriptors 
     train_pts = np.float32([kp_grayframe[m.trainIdx].pt for m in good]).reshape(-1, 1, 2) 
     
-    # finding  perspective transformation 
-    # between two planes 
+    # finding  perspective transformation between two planes 
     matrix, mask = cv.findHomography(query_pts, train_pts, cv.RANSAC, 5.0) 
     
-    # ravel function returns  
-    # contiguous flattened array 
     matches_mask = mask.ravel().tolist()
 
 
